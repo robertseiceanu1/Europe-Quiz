@@ -13,6 +13,6 @@
     <string name="next">NEXT</string>
     <string name="check">CHECK</string>
     <string name="finaltext">Well done! Your score is:</string>
-    <string name="finalscore">%1$d %% \+ %2$s</string>
+    <string name="finalscore">%1$d %% %2$s</string>
 
 </resources>
