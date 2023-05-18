@@ -447,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                     start.setVisibility(View.INVISIBLE);
                     counterImages.setText(getString(R.string.counterImages,counter,workingQuestions.length));
                     counterImages.setVisibility(View.VISIBLE);
-                    score.setText(getString(R.string.score));
+                    score.setText(getString(R.string.score, percentage));
                     score.setVisibility(View.VISIBLE);
                     finalscore.setText("");
                     finalscore.setVisibility(View.VISIBLE);
@@ -558,12 +558,11 @@ public class MainActivity extends AppCompatActivity {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
         );
         int marginStart = (int) (getResources().getDisplayMetrics().widthPixels * 0f / 100.0);
-        int marginTop = (int) (getResources().getDisplayMetrics().heightPixels * 46.5 / 100.0);
+        int marginTop = (int) (getResources().getDisplayMetrics().heightPixels * 45.5 / 100.0);
         layoutParams.setMargins(marginStart, marginTop, 0, 0);
         layoutParams.horizontalBias=0.0f;
         imageView.setLayoutParams(layoutParams);
 
-        // Add the CheckBox to the view hierarchy
         ConstraintLayout layout = findViewById(R.id.app_layout);
         layout.addView(imageView);
 
