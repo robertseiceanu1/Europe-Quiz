@@ -515,14 +515,17 @@ public class MainActivity extends AppCompatActivity {
                     timerText.setText(getTimerText());
                     finalText.setText(getString(R.string.finaltext));
                     finalscore.setText(getString(R.string.finalscore, percentage, timerText.getText()));
+                    reset.setText("FINISH");
                 }
             }
         });
         //daca se da reset
+        String resetText= (String) reset.getText();
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reset(view);
+                if(resetText!="FINISH")
+                    reset(view);
             }
         });
     }
