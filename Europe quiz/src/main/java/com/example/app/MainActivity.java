@@ -159,13 +159,14 @@ public class MainActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.Image);
         TextView score = findViewById(R.id.Score);
         //update scor
-
         counter++;
-        if (counter < workingQuestions.length) {
+        if (counter <= workingQuestions.length) {
             if (counter != 0) {
-                percentage = (int) (points * 1.0 / counter * 100);
+                percentage = points / counter;
             }
             score.setText(getString(R.string.percentage,percentage));
+        }
+        if (counter < workingQuestions.length) {
             TextView counterImages = findViewById(R.id.CounterImages);
             //update imagine
             imageView.setImageResource(workingQuestions[counter].imageId);
@@ -236,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView finalText = findViewById(R.id.FinalText);
 
                 start.setText(getString(R.string.select));
+                findViewById(R.id.Title).setVisibility(View.VISIBLE);
                 checkButton.setEnabled(true);
                 start.setVisibility(View.VISIBLE);
                 setCategoriesVisibility(View.VISIBLE);
@@ -250,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.Reset).setVisibility(View.INVISIBLE);
                 finalText.setText("");
                 finalscore.setText("");
+                wrongTries=0;
 
                 setWorkingAnswersVisibility(View.INVISIBLE);
                 if (timerTask != null) {
@@ -267,6 +270,48 @@ public class MainActivity extends AppCompatActivity {
         });
         resetAlert.show();
     }
+    public void finish(View view) {
+
+        counter=0;
+        points = 0;
+        percentage = 0;
+        TextView counterImages = findViewById(R.id.CounterImages);
+        TextView finalscore = findViewById(R.id.FinalScore);
+        ImageView imageView = findViewById(R.id.Image);
+        TextView score = findViewById(R.id.Score);
+        Button start = findViewById(R.id.Start);
+        Button reset = findViewById(R.id.Reset);
+        Button checkButton = findViewById(R.id.Button);
+        TextView imageText = findViewById(R.id.ImageText);
+        TextView finalText = findViewById(R.id.FinalText);
+
+        start.setText(getString(R.string.select));
+        checkButton.setEnabled(true);
+        findViewById(R.id.Title).setVisibility(View.VISIBLE);
+        start.setVisibility(View.VISIBLE);
+        setCategoriesVisibility(View.VISIBLE);
+        counterImages.setVisibility(View.INVISIBLE);
+        score.setVisibility(View.INVISIBLE);
+        finalscore.setVisibility(View.INVISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+        findViewById(R.id.Question).setVisibility(View.INVISIBLE);
+        timerText.setVisibility(View.INVISIBLE);
+        imageText.setText("");
+        reset.setText(getString(R.string.reset));
+        findViewById(R.id.Button).setVisibility(View.INVISIBLE);
+        findViewById(R.id.Reset).setVisibility(View.INVISIBLE);
+        finalText.setText("");
+        finalscore.setText("");
+        wrongTries=0;
+
+        setWorkingAnswersVisibility(View.INVISIBLE);
+        if (timerTask != null) {
+            timerTask.cancel();
+            time = 0.0;
+            timerStarted = false;
+            timerText.setText(formatTime(0, 0));
+        }
+    }
 
     public void startStopTimer(View view) {
         if (!timerStarted) {
@@ -277,7 +322,6 @@ public class MainActivity extends AppCompatActivity {
             timerTask.cancel();
         }
     }
-
     private void startTimer() {
         timerTask = new TimerTask() {
             @Override
@@ -463,6 +507,8 @@ public class MainActivity extends AppCompatActivity {
                     reset.setVisibility(View.VISIBLE);
                     findViewById(R.id.Question).setVisibility(View.VISIBLE);
 
+                    difficulty.clearCheck();
+                    categories.clearCheck();
                     startStopTimer(view);
                 }
             }
@@ -471,7 +517,7 @@ public class MainActivity extends AppCompatActivity {
         checkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkButton.getText().equals("CHECK")) {
+                if (checkButton.getText().equals(getString(R.string.check))) {
                     if (nothingChecked()) {
                         Toast.makeText(MainActivity.this, "Select an option", Toast.LENGTH_LONG).show();
                     } else {
@@ -480,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
                         //raspuns corect
                         if (correctRadioButton.isChecked()) {
                             Toast.makeText(MainActivity.this, "Correct", Toast.LENGTH_LONG).show();
-                            points++;
+                            points+=100-wrongTries*100.0/3.0;
                             nextImage();
                         }
                         //raspuns gresit
@@ -495,12 +541,12 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, "Wrong again. The correct answer is marked on the screen", Toast.LENGTH_LONG).show();
                                 resetRadioButtons();
                                 correctRadioButton.setChecked(true);
-                                checkButton.setText(getString(R.string.check));
+                                checkButton.setText(getString(R.string.next));
                             }
                         }
                     }
                 } else if (checkButton.getText().equals(getString(R.string.next))) {
-                    checkButton.setText(getString(R.string.next));
+                    checkButton.setText(getString(R.string.check));
                     nextImage();
                 }
                 //conditie de sfarsit
@@ -509,23 +555,24 @@ public class MainActivity extends AppCompatActivity {
                     questionText.setVisibility(View.INVISIBLE);
                     imageText.setText("");
                     checkButton.setEnabled(false);
-//                    reset.setEnabled(false);
                     imageView.setVisibility(View.INVISIBLE);
                     timerTask.cancel();
                     timerText.setText(getTimerText());
                     finalText.setText(getString(R.string.finaltext));
                     finalscore.setText(getString(R.string.finalscore, percentage, timerText.getText()));
-                    reset.setText("FINISH");
+                    reset.setText(getString(R.string.finish));
                 }
             }
         });
         //daca se da reset
-        String resetText= (String) reset.getText();
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(resetText!="FINISH")
+                String resetText= (String) reset.getText();
+                if(!(resetText.equals("FINISH")))
                     reset(view);
+                else
+                    finish(view);
             }
         });
     }
@@ -549,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
 
         constraintLayout.addView(radioButton, layoutParams);
         return id;
-    };
+    }
     private int addDisplayImage(int imageId) {
         ImageView imageView = new ImageView(this);
         imageView.setImageResource(imageId);
